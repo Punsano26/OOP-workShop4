@@ -324,20 +324,9 @@ const main = () => {
   account2.deposit(40000);
   console.log("Account 2 Balance", account2.getBalance());
 
-  const transaction1 = bank1.createTransaction(
-    "Transaction1",
-    "Deposit",
-    1500,
-    "23/03/2024",
-    "Completed"
-  );
-  const transaction2 = bank1.createTransaction(
-    "Transaction2",
-    "Deposit",
-    25000,
-    "24/03/2024",
-    "Completed"
-  );
+  
+  console.log("รายงานการถอนเงิน :", account1.withdraw(100));
+  console.log("รายงานการฝากเงิน :", account2.deposit(500));
 
   const atm1 = bank1.createATM("Location1", "Manger1");
   console.log("ATM Location", atm1.location);
