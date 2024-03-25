@@ -10,6 +10,7 @@ class Customer {
     this.address = address;
     this.phone = phone;
     this.email = email;
+    this.accountx = [];
   }
   //อันนี้มาจาก class diagram
   verify(name, address, phone, email) {
@@ -30,28 +31,11 @@ class Customer {
   createAccount(bank, accountType) {
     return bank.createAccount(accountType);
   }
+  addAccount(account) {
+    this.accountx.push(account); // เพิ่มบัญชีลงในรายการของลูกค้า
+  }
   toString() {
     return `Customer [Name :${this.name}, Address :${this.address}, Phone :${this.phone}, Email :${this.email}]`;
-  }
-
-  //อันนี้กูทำเองนะ
-  getName() {
-    return this.name;
-  }
-  setName(name) {
-    this.name = name;
-  }
-  getAddress() {
-    return this.address;
-  }
-  setAddress(address) {
-    this.address = address;
-  }
-  getPhone() {
-    return this.phone;
-  }
-  getEmail() {
-    return this.email;
   }
 }
 
@@ -63,8 +47,8 @@ class Account {
     this.accountNumber = accountNumber;
     this.balance = balance;
   }
-  setCustomer() {
-    this.customer = this.customer;
+  setCustomer(customer) {
+    this.customer = customer;
   }
   getCustomer() {
     return this.customer;
@@ -73,7 +57,9 @@ class Account {
     return this.accountType;
   }
   //ตรงนี้ยังไม่ได้ใส่เลย ไม่รู้จะใส่อะไรลงไป
-  getTransaction() {}
+  getTransaction() {
+    return this.transaction;
+  }
   //Metrod มันยาวจังมาได้ไงวะ
   createTransaction(
     transaction,
@@ -131,10 +117,10 @@ class Bank {
   createAccount(accountType) {
     var account;
     if (accountType === "current") {
-      const account = new CurrentAccount("154-69-8756-2", 10.0, 500000, 0.3);
+      account = new CurrentAccount("current", 10.0, 500000, 0.3);
       return account;
     } else {
-      account = new SavingAccount("569-78-3267-9", 200.0, 500000, 0.5);
+      account = new SavingAccount("Saving", 200.0, 500000, 0.5);
       return account;
     }
   }
@@ -142,32 +128,43 @@ class Bank {
     const atm = new ATM("Bangkok", "Punsan");
     return atm;
   }
+  // createCustomer(name, address, phone, email) {
+  //   const customer = new Customer(
+  //     "Vick",
+  //     "NPRU",
+  //     "0922932011",
+  //     "vc123@gmail.com"
+  //   );
+  //   return customer;
+  // }
   createCustomer(name, address, phone, email) {
-    const customer = new Customer(
-      "Vick",
-      "NPRU",
-      "0922932011",
-      "vc123@gmail.com"
-    );
+    const customer = new Customer(name, address, phone, email);
     return customer;
   }
+
   //มันมาได้อย้างไรวะ??
-  createTransaction(transaction, type, data, status) {
-    const transaction = new Transaction(transaction, type, data, status);
+  createTransaction(transactionName, transactionType, data, status) {
+    const transaction = new Transaction(
+      transactionName,
+      transactionType,
+      data,
+      status
+    );
     return transaction;
   }
+
   //ปิดบัญชีนี่ปิดกันอย่างไร
   closeAccount() {
-    const account = new Account("acc", 1000);
+    const account = new Account("account", 1000);
     return (account = null);
   }
   //ไม่เข้าใจการเปิดด้วย
   openAccount() {
-    const account = new Account("acc", 1000);
+    const account = new Account("account", 1000);
     return account != null;
   }
   verify(name) {
-    return (this.name = name);
+    return this.name === name;
   }
   //อันนี้ทำไรได้
   maintain() {}
@@ -175,20 +172,6 @@ class Bank {
   manage() {}
   toString() {
     return `${this.name}`;
-  }
-
-  //อันนี้กูก็ทำเองนะ
-  getName() {
-    return this.name;
-  }
-  setName(name) {
-    this.name = name;
-  }
-  getAddress() {
-    return this.address;
-  }
-  setAddress(address) {
-    this.address = address;
   }
 }
 
@@ -278,6 +261,7 @@ class ATM {
   constructor(location, mangedBy) {
     this.location = location;
     this.mangedBy = mangedBy;
+    this.balance = 0; // กำหนดค่าเริ่มต้นให้กับ balance
   }
   identify() {
     return this.identify;
@@ -314,16 +298,25 @@ class ATM {
 const main = () => {
   const bank1 = new Bank("BankNPRU", "thailand", "725034897502894");
   const customer = bank1.createCustomer(
-    "Punsan",
-    "BangPhae",
+    "Vick",
+    "NPRU",
     "0922932011",
-    "654259026@gmail.coim"
+    "vc123@gmail.com"
   );
-  const account1 = bank1.createAccount("CurrentAccount");
-  const account2 = bank1.createAccount("SavingAccount");
 
-  customer1.addAccount(account1);
-  customer1.addAccount(account2);
+  console.log(
+    "ชื่อเจ้าของบัญชี :",
+    customer.name,
+    customer.address,
+    customer.phone,
+    customer.email
+  );
+
+  const account1 = bank1.createAccount("current");
+  const account2 = bank1.createAccount("saving");
+
+  customer.addAccount(account1);
+  customer.addAccount(account2);
 
   account1.deposit(500);
   console.log("Account 1 Balance", account1.getBalance());
@@ -333,12 +326,18 @@ const main = () => {
 
   const transaction1 = bank1.createTransaction(
     "Transaction1",
-    "TransactionType1",
+    "Deposit",
     1500,
     "23/03/2024",
     "Completed"
   );
-  console.log(transaction1.toString());
+  const transaction2 = bank1.createTransaction(
+    "Transaction2",
+    "Deposit",
+    25000,
+    "24/03/2024",
+    "Completed"
+  );
 
   const atm1 = bank1.createATM("Location1", "Manger1");
   console.log("ATM Location", atm1.location);
